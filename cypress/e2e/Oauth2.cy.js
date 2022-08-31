@@ -5,7 +5,9 @@ describe('Getting access token',()=>{
     var clientID = ''
     var clientSecret = ''
     var base64Key = ''
-    const sslCertificate = require('get-ssl-certificate')
+    var curlValue = ''
+    var access_token1 = ''
+    var testingasd = ''
 
     it('access token',()=>{
 
@@ -25,51 +27,42 @@ describe('Getting access token',()=>{
                 "saasApp":true
             }
         }).then((res)=>{
-            cy.log(JSON.stringify(res))
             expect(res.status).to.equal(200)
 
             clientID = res.body.clientId;
             clientSecret = res.body.clientSecret;
-            base64Key = btoa(clientID+clientSecret);
-            cy.log(btoa(clientID+clientSecret))
+            base64Key = btoa(clientID+":"+clientSecret);
             
-            var curlValue1 = "curl https://localhost:8243/token -k \
+            curlValue = "curl https://localhost:8243/token -k \
             -H 'Authorization: Basic "+base64Key+"' \
             -d 'grant_type=password&username=admin&password=admin&scope=apim:api_view apim:api_create'";
+            
+            cy.exec(curlValue).then("getting data",(resAccess) => {
 
-            cy.exec(curlValue1).then((resAccess) => {
-
-                cy.log(JSON.stringify(resAccess))
-
+                cy.log(JSON.parse(resAccess.stdout))
+                testingasd = resAccess.stdout;
+                access_token1 = "b92dd224-0f23-3df8-9644-d5cc6a72e60d";
+                module.exports = {access_token1}
             })
 
-            // cy.request({
-            //     method: "POST",
-            //     url: "https://localhost:8243/token",
-            //     sslCertificate:false,
-            //     form: true,
-            //     headers: {
-            //         "Authorization": "Basic "+ base64Key,
-            //     },
-            //     body: "grant_type=password&username=admin&password=admin&scope=openid apim:api_create",
-            //     //"grant_type=password&username=admin&password=admin&scope=apim:api_view apim:api_create"
-                    
-            //     //{
-            //         // "grant_type":"password",
-            //         // "username":"admin",
-            //         // "password":"admin",
-            //         // "scope":"apim:api_view", 
-            //         // "apim":"api_create"
-            //         //"grant_type=password&username=admin&password=admin&scope=apim":"api_view",
-            //         //"apim":"api_create"
-            //     //}
-
-
-            // })
-
         })
+
+    })
+
+    it("SearchAPI",()=>{
         
-        
+        // cy.request({
+        //     method: 'GET',
+        //     url: "https://localhost:9443/api/am/publisher/v1/apis",
+        //     headers:{
+        //         "Authorization": "Bearer "+ access_token1
+        //     }
+        // }).then((res)=>{
+        //     cy.log(res)
+        // })
+        cy.exec("curl -k -H 'Authorization: Bearer "+access_token1+"' 'https://127.0.0.1:9443/api/am/publisher/v1/apis'").then((res)=>{
+            cy.log(JSON.stringify(res))
+        })
 
     })
 
