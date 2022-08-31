@@ -9,7 +9,7 @@ describe('Getting access token',()=>{
     var access_token1 = ''
     var testingasd = ''
 
-    it('access token',()=>{
+    it('Access Token',()=>{
 
         cy.request({
 
@@ -37,10 +37,16 @@ describe('Getting access token',()=>{
             -H 'Authorization: Basic "+base64Key+"' \
             -d 'grant_type=password&username=admin&password=admin&scope=apim:api_view apim:api_create'";
             
-            cy.exec(curlValue).then("getting data",(resAccess) => {
+            cy.exec(curlValue).then("getting data",(res1) => {
 
-                cy.log(JSON.parse(resAccess.stdout))
-                testingasd = resAccess.stdout;
+                var stringTest = JSON.stringify(JSON.parse(res1.stdout));
+                //var stringTest2 = JSON.parse("'"+stringTest.slice(1,-1)+"'");
+                var stringTest2 = JSON.parse(stringTest);
+
+                cy.log(JSON.stringify(res1))
+                cy.log(stringTest2.access_token)
+                cy.log(JSON.stringify(stringTest2.access_token))
+                testingasd = res1.stdout;
                 access_token1 = "b92dd224-0f23-3df8-9644-d5cc6a72e60d";
                 module.exports = {access_token1}
             })
